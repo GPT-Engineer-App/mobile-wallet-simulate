@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { Box, Button, FormControl, FormLabel, Input, VStack, Heading, useColorMode, useColorModeValue } from "@chakra-ui/react";
+import QRCode from "qrcode.react";
 
 const CashOut = () => {
   const [amount, setAmount] = useState("");
+  const [qrContent, setQrContent] = useState("");
   const { toggleColorMode } = useColorMode();
   const formBackground = useColorModeValue("gray.100", "gray.700");
 
@@ -17,7 +19,7 @@ const CashOut = () => {
         trans_id: "165798067",
         external_id: "ZGYH310558446322",
         operation_id: "89648123750-479991711751",
-        redirect_url: "https://portal.icorepay.net/pay/qr?content=MDAwMjAxMDEwMjEyMjg1MzAwMTFwaC5wcG1pLnAybTAxMTFTUkNQUEhNMlhYWDAzMTJNUkNITlQtM1YxSDYwNTAzMDAwNTIwNDUzOTk1MzAzNjA4NTQwNDEuMDA1ODAyUEg1OTA2TkVYUEFZNjAwNk1hbmlsYTYyNTUwMDEwcGguc3RhcnBheTAzMDZORVhQQVkwNTA4T1IjMjQwOE4wNzA4MTIzNDUgICAwODAzKioqODgyODAwMTJwaC5wcG1pLnFycGgwMTA4T1IjMjQwOE42MzA0RkFCNA==&amp;amount=MS4wMA==&amp;name=TkVYUEFZ&amp;expiration=MjAyNC0wNi0yNiAxOToyMjoxNA==",
+        redirect_url: "https://portal.icorepay.net/pay/qr?content=MDAwMjAxMDEwMjEyMjg1MzAwMTFwaC5wcG1pLnAybTAxMTFTUkNQUEhNMlhYWDAzMTJNUkNITlQtM1YxSDYwNTAzMDAwNTIwNDUzOTk1MzAzNjA4NTQwNDEuMDA1ODAyUEg1OTA2TkVYUEFZNjAwNk1hbmlsYTYyNTUwMDEwcGguc3RhcnBheTAzMDZORVhQQVkwNTA4T1IjMjQwOE4wNzA4MTIzNDUgICAwODAzKioqODgyODAwMTJwaC5wcG1pLnFycGgwMTA4T1IjMjQwOE42MzA0RkFCNA==&amp;amp;amount=MS4wMA==&amp;amp;name=TkVYUEFZ&amp;amp;expiration=MjAyNC0wNi0yNiAxOToyMjoxNA==",
         qr_content: "00020101021228530011ph.ppmi.p2m0111SRCPPHM2XXX0312MRCHNT-3V1H6050300052045399530360854041.005802PH5906NEXPAY6006Manila62550010ph.starpay0306NEXPAY0508OR#2408N070812345   0803***88280012ph.ppmi.qrph0108OR#2408N6304FAB4",
         operation: {
           status: "awaiting_redirect",
@@ -40,8 +42,8 @@ const CashOut = () => {
         throw new Error(`HTTP error! status: ${simulatedResponse.status}`);
       }
 
-      const responseData = simulatedResponse.text;
-      alert(`Status Code: ${simulatedResponse.status}\nResponse Text: ${responseData}`);
+      const responseData = JSON.parse(simulatedResponse.text);
+      setQrContent(responseData.qr_content);
     } catch (error) {
       alert(`An error occurred: ${error.message}`);
     }
@@ -55,11 +57,17 @@ const CashOut = () => {
           <FormLabel>Amount (PHP)</FormLabel>
           <Input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} />
         </FormControl>
-        <Button type="submit" colorScheme="blue" w="full">Cash Out</Button>
+        <Button type="submit" colorScheme="blue" w="full">Pay</Button>
         <Button onClick={toggleColorMode} w="full">
           Toggle {useColorModeValue("Dark", "Light")} Mode
         </Button>
       </VStack>
+      {qrContent && (
+        <Box mt={6} textAlign="center">
+          <Heading size="md" mb={4}>Scan to Pay</Heading>
+          <QRCode value={qrContent} />
+        </Box>
+      )}
     </Box>
   );
 };
